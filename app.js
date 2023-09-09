@@ -13,7 +13,7 @@ app.get('/api/', (req, res) => {
 
         return res.status(400).json({ error: 'Either "name" or "track" query parameters are missing or incorrect.' });
 
-    } else if (slack_name !== "Chime" || track !== "Backend") {
+    } else if (slack_name !== "chime" || track !== "backend") {
 
         return res.status(400).json({ error: 'Invalid "name" or "track" ' });
 
