@@ -7,9 +7,14 @@ function getCurrentUTCTime() {
   
     if (now.getUTCMinutes() >= minTime && now.getUTCMinutes() <= maxTime) {
 
-      return now.toISOString().slice(0, -5) + "Z"; 
-    
-    } 
+      const isoTime = now.toISOString().slice(0, -5) + "Z";
+      return isoTime;
+
+    } else {
+
+      return null;
+      
+    }
   }
   
   module.exports = getCurrentUTCTime;
