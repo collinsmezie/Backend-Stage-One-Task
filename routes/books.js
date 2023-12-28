@@ -11,6 +11,9 @@ connectDB();
 router.post('/books', async (req, res) => {
     try {
         const book = new Book(req.body);
+        if(!book) {
+            return res.status(400).json({ error: 'Bad request' });
+        }
         await book.save();
         res.status(201).json(book);
     } catch (error) {

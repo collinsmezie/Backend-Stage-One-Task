@@ -40,4 +40,4 @@ const connectDB = async () => {
 
 module.exports = connectDB;
 
-// Generate a standalone reusable database connection code file that connects to a mongodb instance and exports the connection object.
+//  standalone reusable database connection code file that connects to a mongodb instance and exports the connection object.
