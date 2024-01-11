@@ -1,11 +1,6 @@
 const express = require('express');
 const booksRouter = express.Router();
-const Book = require('../models/book');
-const connectDB = require('../utils/dbConnect');
 const BookController = require('../controllers/bookController');
-
-// Connect to MongoDB
-// connectDB();
 
 
 booksRouter.get('/books', BookController.getAllBooks);

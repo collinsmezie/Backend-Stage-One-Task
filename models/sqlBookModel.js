@@ -5,10 +5,10 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         id: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING,
             allowNull: false,
             primaryKey: true,
-            autoIncrement: true
+            unique: true
         },
         author: {
             type: DataTypes.STRING,
