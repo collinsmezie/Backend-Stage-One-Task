@@ -1,13 +1,9 @@
 // const { db } = require('../utils/ConnectDbSql')
-const connectDB = require('../utils/dbConnect');
 const Book = require('../models/book');
-
-// Connect to MongoDB
-connectDB();
 
 // const BookModel = db.books;
 
-// // Get all books using sequelize ORM methods
+// Get all books using sequelize ORM methods
 // async function getAllBooks(req, res) {
 //     try {
 //         const books = await BookModel.findAll();
