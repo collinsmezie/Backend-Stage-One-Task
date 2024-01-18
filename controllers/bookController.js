@@ -1,6 +1,7 @@
 // const { db } = require('../utils/ConnectDbSql')
 const Book = require('../models/book');
 
+
 // const BookModel = db.books;
 
 // Get all books using sequelize ORM methods
@@ -59,7 +60,7 @@ const Book = require('../models/book');
 async function getAllBooks(req, res) {
     try {
         const books = await Book.find();
-        res.json(books);
+        res.json(books, req.user);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }    
