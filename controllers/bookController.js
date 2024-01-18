@@ -60,7 +60,7 @@ const Book = require('../models/book');
 async function getAllBooks(req, res) {
     try {
         const books = await Book.find();
-        res.json(books, req.user);
+        res.json(books);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }    
