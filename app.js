@@ -2,21 +2,25 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 4000;
-const passport = require('passport');
-const session = require('express-session');
 const bodyParser = require('body-parser');
-const connectEnsureLogin = require('connect-ensure-login');
-const userModel = require('./models/users');
 const booksRouter = require('./routes/books');
 const cors = require('cors');
-// const authRoute = require('./routes/auth');
+const authRoute = require('./routes/auth');
 const connectDB = require('./utils/dbConnect');
-// const { render } = require('ejs');
-// require('./authentication/auth')
+require('./authentication/auth')
+const { render } = require('ejs');
+const passport = require('passport');
+const session = require('express-session');
+const connectEnsureLogin = require('connect-ensure-login');
+const userModel = require('./models/users');
 
 
 // Connect to database
 connectDB();
+
+// Middleware to allow cross-origin requests
+app.use(cors());
+
 
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -38,6 +42,7 @@ app.set('view engine', 'ejs');
 
 //secure the books route
 app.use('/api', connectEnsureLogin.ensureLoggedIn(), booksRouter);
+
 
 // //render the home page
 // app.get('/', (req, res) => {
@@ -85,15 +90,12 @@ app.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
-// Middleware to allow cross-origin requests
-app.use(cors());
 
 
 // Middleware for authentication
 // app.use('/', authRoute);
 // app.use('/api', passport.authenticate('jwt', { session: false }), booksRouter);
 
-console.log("IN SERVER NOW")
 
 // Middleware for error handling
 app.use((err, req, res, next) => {
