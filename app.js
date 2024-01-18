@@ -8,7 +8,6 @@ const cors = require('cors');
 const authRoute = require('./routes/auth');
 const connectDB = require('./utils/dbConnect');
 require('./authentication/auth')
-const { render } = require('ejs');
 const passport = require('passport');
 const session = require('express-session');
 const connectEnsureLogin = require('connect-ensure-login');
