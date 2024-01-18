@@ -15,10 +15,8 @@ passport.use(
         },
         async (token, done) => {
             try {
-                console.log("IN PASSPORT JWT");
                 return done(null, token.user);
             } catch (error) {
-                console.log("IN PASSPORT ERROR");
                 done(error);
             }
         }
