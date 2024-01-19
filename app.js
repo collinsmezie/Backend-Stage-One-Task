@@ -5,9 +5,7 @@ const port = process.env.PORT || 4000;
 const bodyParser = require('body-parser');
 const booksRouter = require('./routes/books');
 const cors = require('cors');
-const authRoute = require('./routes/auth');
 const connectDB = require('./utils/dbConnect');
-require('./authentication/auth')
 const passport = require('passport');
 const session = require('express-session');
 const connectEnsureLogin = require('connect-ensure-login');
@@ -43,10 +41,6 @@ app.set('view engine', 'ejs');
 app.use('/api', connectEnsureLogin.ensureLoggedIn(), booksRouter);
 
 
-// //render the home page
-// app.get('/', (req, res) => {
-//   res.render('index', { user: req.user });
-// });
 
 //render the login page
 app.get('/login', (req, res) => {
@@ -62,7 +56,6 @@ app.get('/signup', (req, res) => {
 //handle the signup request for new users
 app.post('/signup', (req, res) => {
   const user = req.body;
-  console.log("USER HERE", user);
   userModel.register(
     new userModel({ username: user.username }), user.password, (err) => {
       if (err) {
@@ -88,12 +81,6 @@ app.get('/logout', (req, res) => {
   req.logout();
   res.redirect('/');
 });
-
-
-
-// Middleware for authentication
-// app.use('/', authRoute);
-// app.use('/api', passport.authenticate('jwt', { session: false }), booksRouter);
 
 
 // Middleware for error handling
