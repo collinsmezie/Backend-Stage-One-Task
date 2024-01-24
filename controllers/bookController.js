@@ -11,6 +11,20 @@ async function getAllBooks(req, res) {
     }    
 }
 
+
+// Get a book by id using mongoose ORM methods
+async function getBookById(req, res) {
+    try {
+        const book = await Book.findById(req.params.id);
+        if (!book) {
+            return res.status(404).json({ error: 'Book not found' });
+        }
+        res.json(book);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
+
 // Create a book using mongoose ORM methods
 async function createBook(req, res) {
     try {
@@ -59,6 +73,7 @@ async function deleteBook(req, res) {
 
 module.exports = {
     getAllBooks,
+    getBookById,
     createBook,
     updateBook,
     deleteBook

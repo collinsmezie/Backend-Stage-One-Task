@@ -7,9 +7,7 @@ const booksRouter = require('./routes/books');
 const cors = require('cors');
 const authRoute = require('./routes/auth');
 const connectDB = require('./utils/dbConnect');
-require('./authentication/auth')
-const passport = require('passport');
-
+require('./authentication/auth');
 
 // Connect to database
 connectDB();
@@ -17,14 +15,14 @@ connectDB();
 // Middleware to allow cross-origin requests
 app.use(cors());
 
-
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 
 
 // Middleware for authentication
 app.use('/', authRoute);
-app.use('/api', passport.authenticate('jwt', { session: false }), booksRouter);
+app.use('/api', booksRouter);
 
 
 // Middleware for error handling
