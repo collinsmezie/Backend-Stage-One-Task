@@ -1,13 +1,14 @@
 const express = require('express');
 const booksRouter = express.Router();
 const BookController = require('../controllers/bookController');
-const bookValidation = require('../validators/bookValidator');
-
+const {newBookValidatorMiddleware, updatedBookValidatorMiddleware} = require('../middlewares/validators/bookValidator');
 
 
 booksRouter.get('/books', BookController.getAllBooks);
-booksRouter.post('/books', bookValidation, BookController.createBook);
-booksRouter.put('/books/:id', bookValidation, BookController.updateBook);
+booksRouter.get('/books/author/:author', BookController.getAllBooksByAuthor);
+booksRouter.get('/books/:id', BookController.getBookById);
+booksRouter.post('/books', newBookValidatorMiddleware, BookController.createBook);
+booksRouter.put('/books/:id', updatedBookValidatorMiddleware, BookController.updateBook);
 booksRouter.delete('/books/:id', BookController.deleteBook);
 
 

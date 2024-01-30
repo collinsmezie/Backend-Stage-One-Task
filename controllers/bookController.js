@@ -10,6 +10,32 @@ async function getAllBooks(req, res) {
     }    
 }
 
+//Get all books by author field using mongoose ORM methods
+async function getAllBooksByAuthor(req, res) {
+    try {
+        const books = await Book.find({author: req.params.author});
+        res.json(books);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }    
+}
+
+
+//Get a book by id using mongoose ORM methods
+async function getBookById(req, res) {
+    try {
+        const book = await Book.findById(req.params.id);
+        if (!book) {
+            return res.status(404).json({ error: 'Book not found' });
+        }
+        res.json(book);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
+
+
+
 // Create a book using mongoose ORM methods
 async function createBook(req, res) {
     try {
@@ -55,6 +81,8 @@ async function deleteBook(req, res) {
 
 module.exports = {
     getAllBooks,
+    getAllBooksByAuthor,
+    getBookById,
     createBook,
     updateBook,
     deleteBook
