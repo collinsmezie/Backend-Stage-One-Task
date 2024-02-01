@@ -3,10 +3,24 @@ const authorsRouter = express.Router();
 const AuthorController = require('../controllers/authorController');
 const {newAuthorValidatorMiddleware, updatedAuthorValidatorMiddleware } = require('../middlewares/Validators/authorValidator');
 
-authorsRouter.get('/authors', AuthorController.getAllAuthors);
+// Get Author Info by id
 authorsRouter.get('/authors/:id', AuthorController.getAuthorById);
-authorsRouter.post('/authors', newAuthorValidatorMiddleware, AuthorController.createAuthor);
+// Update Author info by id
 authorsRouter.put('/authors/:id', updatedAuthorValidatorMiddleware, AuthorController.updateAuthor);
-authorsRouter.delete('/authors/:id', AuthorController.deleteAuthor);
+// Create new Author
+authorsRouter.post('/authors', newAuthorValidatorMiddleware, AuthorController.createAuthor);
+// Get all Authors
+authorsRouter.get('/authors', AuthorController.getAllAuthors);
+// Create book by author
+authorsRouter.post('/authors/:authorId/newBook', AuthorController.createBookByAuthor);
+// Update One Book by Author
+authorsRouter.put('/authors/:authorId/testbooks/:bookId', AuthorController.updateAuthorBook);
+// Delete One Book by Author
+authorsRouter.delete('/authors/:authorId/testbooks/:bookId', AuthorController.deleteOneBook);
+// Delete all books by author
+authorsRouter.delete('/authors/:authorId/testbooks', AuthorController.deleteAllBooksByAuthor);
+// Delete Author and All Books by Author
+authorsRouter.delete('/authors/:authorId', AuthorController.deleteAuthorAndBooks);
+
 
 module.exports = authorsRouter;

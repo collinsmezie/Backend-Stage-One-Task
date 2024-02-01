@@ -9,6 +9,7 @@ const rateLimit = require('express-rate-limit')
 const logger = require('./middlewares/Logger/logger');
 const auth0Middleware = require('./middlewares/Authentication/auth0');
 const { requiresAuth } = require('express-openid-connect');
+const testbooksRouter = require('./routes/testbooks');
 const port = process.env.PORT || 4000;
 
 
@@ -18,7 +19,7 @@ const app = express();
 connectDB();
 
 // Middleware to handle authentication
-app.use(auth0Middleware);
+// app.use(auth0Middleware);
 
 const limiter = rateLimit({
   windowMs: 0.2 * 60 * 1000, // 15 minutes
@@ -37,7 +38,9 @@ app.use(limiter)
 app.use(bodyParser.json());
 
 // Middleware to handle routes
-app.use('/api', requiresAuth(), booksRouter, authorsRouter);
+// app.use('/api', requiresAuth(), booksRouter, authorsRouter, testbooksRouter);
+app.use('/api', booksRouter, authorsRouter, testbooksRouter);
+
 
 app.get('/', (req, res) => {
   res.send('Welcome to the BookStore API');

@@ -5,7 +5,6 @@ const {newBookValidatorMiddleware, updatedBookValidatorMiddleware} = require('..
 
 
 booksRouter.get('/books', BookController.getAllBooks);
-booksRouter.get('/books/author/:author', BookController.getAllBooksByAuthor);
 booksRouter.get('/books/:id', BookController.getBookById);
 booksRouter.post('/books', newBookValidatorMiddleware, BookController.createBook);
 booksRouter.put('/books/:id', updatedBookValidatorMiddleware, BookController.updateBook);

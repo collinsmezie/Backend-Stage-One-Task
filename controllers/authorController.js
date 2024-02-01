@@ -1,41 +1,48 @@
-const Author = require('../models/authors');
 
-// Get all authors using mongoose ORM methods
-async function getAllAuthors(req, res) {
-    try {
-        const authors = await Author.find();
-        res.json(authors);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }    
+const Author = require('../models/authors');
+const Book = require('../models/testbook');
+
+// Controller for creating a new author
+async function createAuthor(req, res) {
+  try {
+    const { firstName, lastName, dob, country } = req.body;
+    const author = new Author({ firstName, lastName, dob, country });
+    await author.save();
+    console.log('HERE NOW', req.body);
+    res.status(201).json(author);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 }
 
-//Get an author by id using mongoose ORM methods
+
+//Get an author and their books by id using mongoose ORM methods
 async function getAuthorById(req, res) {
     try {
-        const author = await Author.findById(req.params.id);
-        if (!author) {
+        const authorInfo = await Author.findById(req.params.id);
+        if (!authorInfo) {
             return res.status(404).json({ error: 'Author not found' });
         }
-        res.json(author);
+        // Find all books in the author's books array
+        const books = await Book.find({ _id: { $in: authorInfo.books } });
+        //check if books array is empty
+        if (books.length === 0) {
+            return res.json({ authorInfo });
+        }
+        const author = { 
+            firstName: authorInfo.firstName,
+            lastName: authorInfo.lastName,
+            dob: authorInfo.dob,
+            country: authorInfo.country
+        }
+        
+        res.json({ author, books });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 }
 
-// Create an author using mongoose ORM methods
-async function createAuthor(req, res) {
-    try {
-        const author = new Author(req.body);
-        if(!author) {
-            return res.status(400).json({ error: 'Bad request' });
-        }
-        await author.save();
-        res.status(201).json(author);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-}
+
 
 // Update an author using mongoose ORM methods
 async function updateAuthor(req, res) {
@@ -51,24 +58,196 @@ async function updateAuthor(req, res) {
 }
 
 
-// Delete an author using mongoose ORM methods
-async function deleteAuthor(req, res) {
+
+// Controller for creating a new book
+async function createBookByAuthor(req, res) {
+  try {
+    // extract the authorId from the request parameters
+    const authorId = req.params.authorId;
+    const newBook = new Book(req.body);
+    if (!newBook) {
+      return res.status(400).json({ error: 'Bad request' });
+    }
+    await newBook.save();
+
+    // Update the author's books array
+    const author = await Author.findByIdAndUpdate(authorId, { $push: { books: newBook._id } }, { new: true });
+
+    res.status(201).json({ book: newBook, author });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+
+
+// Controller for getting all authors
+async function getAllAuthors(req, res) {
+  try {
+    const authors = await Author.find();
+    res.json(authors);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+
+// Controller to get all books of an author
+async function getAllBooksByAuthor(req, res) {
+  try {
+    const authorId = req.params.authorId;
+
+    // Find the author by ID
+    const author = await Author.findById(authorId);
+
+    // Check if the author exists
+    if (!author) {
+      return res.status(404).json({ error: 'Author not found' });
+    }
+
+    // Find all books with the author's ID
+    const books = await Book.find({ authorId: authorId });
+
+    res.json({ author, books });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+// Controller to update an author's book
+async function updateAuthorBook(req, res) {
+  try {
+    const authorId = req.params.authorId;
+    const bookId = req.params.bookId;
+
+    // Find the author by ID
+    const author = await Author.findById(authorId);
+
+    // Check if the author exists
+    if (!author) {
+      return res.status(404).json({ error: 'Author not found' });
+    }
+
+    // Check if the author has the book
+    if (!author.books.includes(bookId)) {
+      return res.status(404).json({ error: "You don't have this book" });
+    }
+
+    // Find the book by ID
+    const book = await Book.findById(bookId);
+
+    // Check if the book exists
+    if (!book) {
+      return res.status(404).json({ error: 'Book not found' });
+    }
+
+    // Update the book
+    const updatedBook = await Book.findByIdAndUpdate(bookId, req.body, { new: true });
+
+    res.json({ message: 'Book updated successfully', updatedBook });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+  // Controller to delete One book by authorId
+  async function deleteOneBook(req, res) {
     try {
-    const author = await Author.findByIdAndDelete(req.params.id);
-            if (!author) {
-                return res.status(404).json({ error: 'Author not found' });
-            }
-            res.json({ message: 'Author deleted successfully' });
-        } catch (error) {
-            res.status(400).json({ error: error.message });
-        }
-}
+      const authorId = req.params.authorId;
+      const bookId = req.params.bookId;
+
+      // Find the author by ID
+      const author = await Author.findById(authorId);
+
+      // Check if the author exists
+      if (!author) {
+        return res.status(404).json({ error: 'Author not found' });
+      }
+
+      // Find the book by ID
+      const book = await Book.findById(bookId);
+
+      // Check if the book exists
+      if (!book) {
+        return res.status(404).json({ error: 'Book not found' });
+      }
+
+      // Delete the book
+      await book.deleteOne();
+
+      // Remove the book from the author's books array
+      await Author.findByIdAndUpdate(authorId, { $pull: { books: bookId } });
+
+      res.json({ message: 'Book deleted successfully', book });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  // Controller to delete all books by author
+  async function deleteAllBooksByAuthor(req, res) {
+    try {
+      const authorId = req.params.authorId;
+
+      // Find the author by ID
+      const author = await Author.findById(authorId);
+
+      // Check if the author exists
+      if (!author) {
+        return res.status(404).json({ error: 'Author not found' });
+      }
+
+      // Find and delete all books in the author's books array by book ID
+      const deletedBooks = await Book.deleteMany({ _id: { $in: author.books } });
+
+      // Remove all books from the author's books array
+      await Author.findByIdAndUpdate(authorId, { $set: { books: [] } });
+
+      res.json({ message: 'All books deleted successfully', deletedBooks });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 
 
-module.exports = {
-    getAllAuthors,
-    getAuthorById,
+
+  // Controller to delete an author and their books
+  async function deleteAuthorAndBooks(req, res) {
+    try {
+      const authorId = req.params.authorId;
+
+      // Find the author by ID
+      const author = await Author.findById(authorId);
+
+      // Check if the author exists
+      if (!author) {
+        return res.status(404).json({ error: 'Author not found' });
+      }
+
+      // Find and delete all books in the author's books array by book ID
+      const deletedBooks = await Book.deleteMany({ _id: { $in: author.books } });
+
+      // Delete the author
+      await author.deleteOne();
+
+      res.json({ message: 'Author and associated books deleted successfully', deletedBooks });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+
+
+
+  module.exports = {
     createAuthor,
+    getAuthorById,
     updateAuthor,
-    deleteAuthor
-}
+    createBookByAuthor,
+    getAllAuthors,
+    getAllBooksByAuthor,
+    updateAuthorBook,
+    deleteOneBook,
+    deleteAllBooksByAuthor,
+    deleteAuthorAndBooks
+  };

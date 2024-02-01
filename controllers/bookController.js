@@ -10,16 +10,6 @@ async function getAllBooks(req, res) {
     }    
 }
 
-//Get all books by author field using mongoose ORM methods
-async function getAllBooksByAuthor(req, res) {
-    try {
-        const books = await Book.find({author: req.params.author});
-        res.json(books);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }    
-}
-
 
 //Get a book by id using mongoose ORM methods
 async function getBookById(req, res) {
@@ -81,7 +71,6 @@ async function deleteBook(req, res) {
 
 module.exports = {
     getAllBooks,
-    getAllBooksByAuthor,
     getBookById,
     createBook,
     updateBook,
